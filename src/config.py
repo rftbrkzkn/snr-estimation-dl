@@ -1,5 +1,11 @@
 """Tüm deney ayarları tek yerde. Başka dosyalarda sabit sayı yazma, buradan oku."""
 
+import os
+
+# Hızlı test modu: SNR_QUICK=1 ortam değişkeniyle veri boyutları ve epoch küçülür.
+# Sadece kodun hatasız çalıştığını kontrol etmek için. Gerçek sonuçlar için kullanma.
+QUICK = os.environ.get("SNR_QUICK") == "1"
+
 # Tekrarlanabilirlik
 SEED = 42
 
@@ -22,6 +28,9 @@ N_TEST_PER_SNR = 1000
 BATCH_SIZE = 256
 EPOCHS = 50
 LEARNING_RATE = 1e-3
+
+if QUICK:
+    N_TRAIN, N_VAL, N_TEST_PER_SNR, EPOCHS = 2000, 500, 50, 2
 
 # Yollar
 DATA_DIR = "data"
