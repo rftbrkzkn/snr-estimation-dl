@@ -134,6 +134,21 @@ All networks regress the SNR in decibels and are trained with the mean squared e
 
 \section{Experimental Setup}
 
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig_rmse_vs_snr}
+\caption{RMSE versus true SNR for $N = 1024$ over AWGN.}
+\label{fig:rmse}
+\end{figure}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{fig_frame_length}
+\caption{RMSE versus frame length over AWGN: all test SNRs (left), SNR $\leq -4$ dB (centre) and SNR $> -4$ dB (right).}
+\label{fig:framelen}
+\end{figure*}
+
+
 For each frame length, 50\,000 training frames and 10\,000 validation frames are generated with SNR values drawn uniformly from $[-15, 25]$ dB. The training range extends 5 dB beyond the test range on both sides to reduce the regression of the estimates toward the centre of the training distribution near the edges of the test range. The test set contains 1\,000 frames at each SNR from $-10$ to 20 dB in steps of 2 dB, that is, 16\,000 frames per frame length. Training, validation and test sets are generated with different random seeds.
 
 The performance measure is the root mean square error (RMSE) between the estimated and true SNR in decibels. Results are reported over the whole test range and separately for SNR $\leq -4$ dB, the region in which M2M4 breaks down, and for SNR $> -4$ dB. The simulation, training and evaluation code is publicly available at \url{https://github.com/rftbrkzkn/snr-estimation-dl}.
@@ -162,27 +177,21 @@ Feature-based MLP & 4\,801 & \textbf{1.42} & \textbf{2.59} & 0.68 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\columnwidth]{fig_rmse_vs_snr}
-\caption{RMSE versus true SNR for $N = 1024$ over AWGN.}
-\label{fig:rmse}
-\end{figure}
-
 The raw-sample MLP did not generalize. In a preliminary experiment with training and test SNRs both drawn from $[-10, 20]$ dB, its training error decreased while its validation error increased from the first epochs, and its predictions remained close to a constant value regardless of the true SNR, giving an overall RMSE of 9.36 dB. The SNR is encoded in the distribution of the sample magnitudes rather than in the position of individual samples within the frame. A fully connected network has to learn this permutation-invariant property from data, whereas the weight sharing and global pooling of the CNN, and the explicit moment features of the feature-based MLP, provide it by construction. The raw-sample MLP is therefore excluded from the remaining experiments.
 
 At low SNR, both learned estimators show a negative bias of about 2.0--2.8 dB between $-6$ and $-4$ dB. In this region the frames carry little information about the SNR, and the regression estimate approaches the conditional mean of the training distribution. The bias thus depends on the SNR distribution used during training, which should be chosen to match the operating range of the target receiver.
 
 \subsection{Effect of the Frame Length}
 
-Fig.~\ref{fig:framelen} shows the RMSE as the frame length is reduced from 1\,024 to 128 samples. All estimators degrade with fewer samples, because the sample moments and learned statistics become less reliable, but M2M4 degrades most. Its overall RMSE increases from 5.71 to 7.56 dB, while that of the feature-based MLP increases from 1.42 to 2.13 dB. The difference is most visible above $-4$ dB: the RMSE of M2M4 increases from 0.55 dB at $N = 1024$ to 3.43 dB at $N = 128$, whereas the feature-based MLP reaches 1.87 dB at $N = 128$. For $N \leq 512$, the feature-based MLP is more accurate than M2M4 in both SNR regions, which is relevant for receivers that must estimate the SNR from short packets or rapidly varying channels.
-
-\begin{figure*}[!t]
+\begin{figure}[!t]
 \centering
-\includegraphics[width=\textwidth]{fig_frame_length}
-\caption{RMSE versus frame length over AWGN: all test SNRs (left), SNR $\leq -4$ dB (centre) and SNR $> -4$ dB (right).}
-\label{fig:framelen}
-\end{figure*}
+\includegraphics[width=\columnwidth]{fig_robustness}
+\caption{RMSE over all test SNRs ($N = 1024$) for clean AWGN, a random phase offset, and a random phase and frequency offset. Hatched bars denote networks trained only on AWGN.}
+\label{fig:robust}
+\end{figure}
+
+
+Fig.~\ref{fig:framelen} shows the RMSE as the frame length is reduced from 1\,024 to 128 samples. All estimators degrade with fewer samples, because the sample moments and learned statistics become less reliable, but M2M4 degrades most. Its overall RMSE increases from 5.71 to 7.56 dB, while that of the feature-based MLP increases from 1.42 to 2.13 dB. The difference is most visible above $-4$ dB: the RMSE of M2M4 increases from 0.55 dB at $N = 1024$ to 3.43 dB at $N = 128$, whereas the feature-based MLP reaches 1.87 dB at $N = 128$. For $N \leq 512$, the feature-based MLP is more accurate than M2M4 in both SNR regions, which is relevant for receivers that must estimate the SNR from short packets or rapidly varying channels.
 
 \subsection{Robustness to Phase and Frequency Offsets}
 
@@ -191,13 +200,6 @@ Practical receivers estimate the SNR before carrier synchronization is complete.
 \tilde{r}[k] = r[k]\, e^{\,j(\theta + 2\pi f k)}.
 \label{eq:impair}
 \end{equation} Two versions of each network are compared: one trained on AWGN only (Section~\ref{sec:awgn}) and one trained on frames with random phase and frequency offsets drawn from the same distributions.
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\columnwidth]{fig_robustness}
-\caption{RMSE over all test SNRs ($N = 1024$) for clean AWGN, a random phase offset, and a random phase and frequency offset. Hatched bars denote networks trained only on AWGN.}
-\label{fig:robust}
-\end{figure}
 
 Fig.~\ref{fig:robust} shows the results. As expected from \eqref{eq:m2m4}, M2M4 is unaffected because it depends only on $|r[k]|$. The networks trained only on AWGN degrade substantially: the RMSE of the CNN increases from 1.74 to 5.03 dB under a phase offset, and that of the feature-based MLP from 1.43 to 3.01 dB, because several of its features depend on the phase of the constellation. The degradation is smaller under the combined offset; a detailed analysis of this effect is left for future work. Training with the impairments removes most of this sensitivity: the feature-based MLP achieves 1.53 dB and the CNN 1.88--1.89 dB in both impaired scenarios, at the cost of a small increase in error on clean AWGN data (from 1.43 to 1.51 dB and from 1.74 to 1.94 dB, respectively). Learned SNR estimators should therefore be trained on data that reproduce the impairments expected at their position in the receiver chain.
 
