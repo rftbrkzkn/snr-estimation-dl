@@ -68,7 +68,11 @@ Each frame consists of $N$ complex baseband samples
 r[k] = s[k] + w[k], \qquad k = 0, \ldots, N-1,
 \label{eq:model}
 \end{equation}
-where $s[k]$ is a QPSK symbol drawn uniformly from $\{(\pm 1 \pm j)/\sqrt{2}\}$ with unit average power, and $w[k]$ is circularly symmetric complex Gaussian noise with variance $\sigma^2$. Since the signal power is unity, the SNR of a frame is
+where $w[k]$ is circularly symmetric complex Gaussian noise with variance $\sigma^2$, and $s[k]$ is a QPSK symbol with unit average power, drawn uniformly from
+\begin{equation}
+s[k] \in \frac{1}{\sqrt{2}}\,\{1+j,\; 1-j,\; -1+j,\; -1-j\}.
+\label{eq:qpsk}
+\end{equation} Since the signal power is unity, the SNR of a frame is
 \begin{equation}
 \mathrm{SNR} = \frac{1}{\sigma^2}, \qquad \sigma^2 = 10^{-\mathrm{SNR_{dB}}/10}.
 \label{eq:snr}
@@ -94,7 +98,12 @@ For a constant-modulus constellation such as QPSK in complex Gaussian noise, the
 \hat{S} = \sqrt{2M_2^2 - M_4}, \qquad \hat{W} = M_2 - \hat{S},
 \label{eq:m2m4}
 \end{equation}
-and $\widehat{\mathrm{SNR}}_{\mathrm{dB}} = 10\log_{10}(\hat{S}/\hat{W})$. The estimator uses only the sample magnitudes and is therefore invariant to any phase rotation of the received frame. When the sample moments deviate from their expectations, $2M_2^2 - M_4$ or $\hat{W}$ can become negative; such frames are counted as invalid, and their estimates are clipped to the interval $[-30, 50]$ dB so that the error remains finite.
+and the SNR estimate in decibels is
+\begin{equation}
+\widehat{\mathrm{SNR}}_{\mathrm{dB}} = 10\log_{10}\!\left(\hat{S}/\hat{W}\right).
+\label{eq:snrhat}
+\end{equation}
+The estimator uses only the sample magnitudes and is therefore invariant to any phase rotation of the received frame. When the sample moments deviate from their expectations, $2M_2^2 - M_4$ or $\hat{W}$ can become negative; such frames are counted as invalid, and their estimates are clipped to the interval $[-30, 50]$ dB so that the error remains finite.
 
 \section{Learning-Based Estimators}
 
@@ -104,7 +113,12 @@ Before being passed to a network, every frame is scaled to unit average power, w
 
 \subsection{Feature-Based MLP}
 
-Eight scale-invariant features are extracted from each normalized frame: the moment ratios $M_4/M_2^2$ and $M_6/M_2^3$; the standard deviations of $|r[k]|$ and $|r[k]|^2$; the mean absolute values of the in-phase and quadrature components; the fourth-order statistic $-\mathrm{Re}\{\frac{1}{N}\sum_k r^4[k]\}$, which equals one for noise-free, phase-aligned QPSK; and the M2M4 estimate divided by ten. The features are standardized with the mean and standard deviation of the training set. The network has two hidden layers of 64 units with ReLU activations and a single linear output, for a total of 4\,801 parameters.
+Eight scale-invariant features are extracted from each normalized frame: the moment ratios $M_4/M_2^2$ and $M_6/M_2^3$; the standard deviations of $|r[k]|$ and $|r[k]|^2$; the mean absolute values of the in-phase and quadrature components; the fourth-order statistic
+\begin{equation}
+C_4 = -\mathrm{Re}\Big\{\frac{1}{N}\sum_{k=0}^{N-1} r^4[k]\Big\},
+\label{eq:c4}
+\end{equation}
+which equals one for noise-free, phase-aligned QPSK; and the M2M4 estimate divided by ten. The features are standardized with the mean and standard deviation of the training set. The network has two hidden layers of 64 units with ReLU activations and a single linear output, for a total of 4\,801 parameters.
 
 \subsection{Raw-Sample MLP}
 
@@ -172,7 +186,11 @@ Fig.~\ref{fig:framelen} shows the RMSE as the frame length is reduced from 1\,02
 
 \subsection{Robustness to Phase and Frequency Offsets}
 
-Practical receivers estimate the SNR before carrier synchronization is complete. To assess robustness, test frames are rotated by a random phase $\theta$ drawn uniformly from $[0, 2\pi)$, and, in a second scenario, additionally subjected to a carrier frequency offset $f$ drawn uniformly from $[-0.005, 0.005]$ cycles per sample, so that $r[k]$ is replaced by $r[k]\,e^{j(\theta + 2\pi f k)}$. Two versions of each network are compared: one trained on AWGN only (Section~\ref{sec:awgn}) and one trained on frames with random phase and frequency offsets drawn from the same distributions.
+Practical receivers estimate the SNR before carrier synchronization is complete. To assess robustness, test frames are rotated by a random phase $\theta$ drawn uniformly from $[0, 2\pi)$, and, in a second scenario, additionally subjected to a carrier frequency offset $f$ drawn uniformly from $[-0.005, 0.005]$ cycles per sample, so that each received sample becomes
+\begin{equation}
+\tilde{r}[k] = r[k]\, e^{\,j(\theta + 2\pi f k)}.
+\label{eq:impair}
+\end{equation} Two versions of each network are compared: one trained on AWGN only (Section~\ref{sec:awgn}) and one trained on frames with random phase and frequency offsets drawn from the same distributions.
 
 \begin{figure}[!t]
 \centering
