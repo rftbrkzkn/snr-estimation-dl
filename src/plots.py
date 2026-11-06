@@ -8,6 +8,7 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.ticker import MaxNLocator
 
 from src import config
 
@@ -109,6 +110,7 @@ def plot_training_curves(histories, name="training_curves"):
         ax.plot(ep, np.sqrt(h["val_loss"]), color=c, linewidth=2, label=f"{method} (val)")
         ax.plot(ep, np.sqrt(h["train_loss"]), color=c, linewidth=1, linestyle="--")
     ax.set_xlabel("Epoch")
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     ax.set_ylabel("RMSE (dB)")
     ax.set_yscale("log")
     ax.legend(title="kesikli = train", title_fontsize=8, fontsize=8)
