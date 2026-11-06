@@ -77,15 +77,28 @@ pip install -r requirements.txt
 
 ---
 
+## İlk Sonuçlar (N = 1024, AWGN)
+
+| Yöntem | Parametre | RMSE tüm (dB) | RMSE ≤ −4 dB | RMSE > −4 dB |
+|---|---|---|---|---|
+| M2M4 | — | 5.71 | 11.38 | 0.55 |
+| Feature + MLP | 4.8 k | **1.14** | **2.10** | **0.52** |
+| MLP | 1.2 M | 9.36 | 12.05 | 8.27 |
+| 1D CNN | 81 k | 1.40 | 2.42 | 0.81 |
+
+![RMSE vs SNR](results/figures/rmse_vs_snr.png)
+
+---
+
 ## Durum
 
 - [x] Repo iskeleti
 - [x] Colab notebook
 - [x] Veri üreteci + constellation grafiği
 - [x] M2M4 baseline + ilk RMSE vs SNR eğrisi
-- [ ] Feature + MLP
-- [ ] MLP
-- [ ] 1D CNN
+- [x] Feature + MLP
+- [x] MLP
+- [x] 1D CNN (ilk sürüm)
 - [ ] Frame uzunluğu deneyi
 - [ ] Robustness deneyi (faz / frekans kayması)
 - [ ] Bildiri taslağı
