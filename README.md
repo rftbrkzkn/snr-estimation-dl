@@ -1,5 +1,7 @@
 # Deep Learning ile SNR Tahmini
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rftbrkzkn/snr-estimation-dl/blob/main/notebooks/colab_runner.ipynb)
+
 Alınan I/Q örneklerinden **SNR (Signal-to-Noise Ratio)** değerini derin öğrenme modelleriyle tahmin eden ve sonuçları klasik **M2M4** estimator ile **RMSE** üzerinden karşılaştıran çalışma.
 
 Hedef: ders ödevi + konferans bildirisi.
@@ -52,7 +54,8 @@ snr-estimation-dl/
 │   ├── evaluate.py      # RMSE, bias, SNR bazlı metrikler
 │   └── plots.py         # Bildiri kalitesinde figürler
 ├── docs/                # Plan, flowchart'lar, notlar
-├── notebooks/           # Keşif ve hızlı denemeler
+├── notebooks/
+│   └── colab_runner.ipynb  # Colab'da çalıştırma notebook'u
 ├── results/
 │   ├── figures/         # Üretilen grafikler
 │   └── tables/          # Sonuç tabloları (csv)
@@ -64,6 +67,10 @@ snr-estimation-dl/
 
 ## Kurulum
 
+**Colab:** yukarıdaki **Open in Colab** butonuna tıkla, ilk hücreyi çalıştır.
+
+**Lokal:**
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -73,6 +80,7 @@ pip install -r requirements.txt
 ## Durum
 
 - [x] Repo iskeleti
+- [x] Colab notebook
 - [ ] Veri üreteci + constellation grafiği
 - [ ] M2M4 baseline + ilk RMSE vs SNR eğrisi
 - [ ] Feature + MLP
