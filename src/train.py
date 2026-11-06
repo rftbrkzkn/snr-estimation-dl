@@ -1,0 +1,3 @@
+"""Eğitim döngüsü."""
+
+# TODO

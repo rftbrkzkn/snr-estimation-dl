@@ -1,0 +1,3 @@
+"""Bildiri kalitesinde figürler."""
+
+# TODO
