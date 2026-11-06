@@ -55,7 +55,8 @@ snr-estimation-dl/
 │   └── plots.py         # Bildiri kalitesinde figürler
 ├── docs/                # Plan, flowchart'lar, notlar
 ├── notebooks/
-│   └── colab_runner.ipynb  # Colab'da çalıştırma notebook'u
+│   ├── colab_runner.ipynb  # İlk karşılaştırma (4 model, AWGN)
+│   └── deneyler_v2.ipynb   # Deney 1–3: bildirideki sonuçlar
 ├── results/
 │   ├── figures/         # Üretilen grafikler
 │   └── tables/          # Sonuç tabloları (csv)
@@ -87,6 +88,9 @@ pip install -r requirements.txt
 | 1D CNN | 81 k | 1.40 | 2.42 | 0.81 |
 
 ![RMSE vs SNR](results/figures/rmse_vs_snr.png)
+
+Deney 1–3 sonuçları [`notebooks/deneyler_v2.ipynb`](notebooks/deneyler_v2.ipynb) ile üretildi
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/rftbrkzkn/snr-estimation-dl/blob/main/notebooks/deneyler_v2.ipynb)
 
 ### Deney 2 — Frame uzunluğu (RMSE tüm, dB)
 
