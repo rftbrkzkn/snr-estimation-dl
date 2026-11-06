@@ -88,6 +88,29 @@ pip install -r requirements.txt
 
 ![RMSE vs SNR](results/figures/rmse_vs_snr.png)
 
+### Deney 2 — Frame uzunluğu (RMSE tüm, dB)
+
+| N | M2M4 | Feature + MLP | 1D CNN |
+|---|---|---|---|
+| 128 | 7.56 | **2.13** | 2.59 |
+| 256 | 6.87 | **1.81** | 2.24 |
+| 512 | 6.30 | **1.60** | 1.98 |
+| 1024 | 5.71 | **1.42** | 1.77 |
+
+![Frame uzunluğu](results/figures/exp2_rmse_vs_frame_length.png)
+
+### Deney 3 — Robustness (RMSE tüm, dB, N = 1024)
+
+| Yöntem | AWGN | Faz kayması | Faz + frekans kayması |
+|---|---|---|---|
+| M2M4 | 5.88 | 5.87 | 5.88 |
+| Feature + MLP (AWGN ile eğitilmiş) | 1.43 | 3.01 | 2.10 |
+| Feature + MLP (bozucu ile eğitilmiş) | 1.51 | **1.53** | **1.53** |
+| 1D CNN (AWGN ile eğitilmiş) | 1.74 | 5.03 | 4.11 |
+| 1D CNN (bozucu ile eğitilmiş) | 1.94 | 1.88 | 1.89 |
+
+![Robustness](results/figures/exp3_robustness.png)
+
 ---
 
 ## Durum
@@ -99,6 +122,6 @@ pip install -r requirements.txt
 - [x] Feature + MLP
 - [x] MLP
 - [x] 1D CNN (ilk sürüm)
-- [ ] Frame uzunluğu deneyi
-- [ ] Robustness deneyi (faz / frekans kayması)
+- [x] Frame uzunluğu deneyi
+- [x] Robustness deneyi (faz / frekans kayması)
 - [ ] Bildiri taslağı
