@@ -81,8 +81,8 @@ pip install -r requirements.txt
 
 - [x] Repo iskeleti
 - [x] Colab notebook
-- [ ] Veri üreteci + constellation grafiği
-- [ ] M2M4 baseline + ilk RMSE vs SNR eğrisi
+- [x] Veri üreteci + constellation grafiği
+- [x] M2M4 baseline + ilk RMSE vs SNR eğrisi
 - [ ] Feature + MLP
 - [ ] MLP
 - [ ] 1D CNN
