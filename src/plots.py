@@ -94,3 +94,52 @@ def plot_metric_vs_snr(results, metric="rmse", name=None, ylabel=None):
     fig.tight_layout()
     save(fig, name or f"{metric}_vs_snr")
     return fig
+
+
+def plot_training_curves(histories, name="training_curves"):
+    """Her model için train / validation RMSE (dB) — epoch'a göre.
+
+    histories : {yöntem_adı: train_model'in döndürdüğü history}
+    """
+    set_style()
+    fig, ax = plt.subplots(figsize=(4.5, 3.2))
+    for method, h in histories.items():
+        c = METHOD_COLORS.get(method)
+        ep = np.arange(1, len(h["train_loss"]) + 1)
+        ax.plot(ep, np.sqrt(h["val_loss"]), color=c, linewidth=2, label=f"{method} (val)")
+        ax.plot(ep, np.sqrt(h["train_loss"]), color=c, linewidth=1, linestyle="--")
+    ax.set_xlabel("Epoch")
+    ax.set_ylabel("RMSE (dB)")
+    ax.set_yscale("log")
+    ax.legend(title="kesikli = train", title_fontsize=8, fontsize=8)
+    fig.tight_layout()
+    save(fig, name)
+    return fig
+
+
+def plot_pred_vs_true(y_true, preds, name="pred_vs_true"):
+    """Tahmin vs gerçek SNR — her yöntem ayrı panel, ideal çizgi y = x.
+
+    preds : {yöntem_adı: tahmin dizisi}
+    """
+    set_style()
+    n = len(preds)
+    fig, axes = plt.subplots(1, n, figsize=(2.6 * n, 2.8), sharex=True, sharey=True)
+    axes = np.atleast_1d(axes)
+    rng = np.random.default_rng(0)
+    idx = rng.choice(len(y_true), size=min(4000, len(y_true)), replace=False)
+    jitter = rng.uniform(-0.6, 0.6, size=len(idx))
+    lo, hi = y_true.min() - 5, y_true.max() + 5
+    for ax, (method, yp) in zip(axes, preds.items()):
+        ax.scatter(y_true[idx] + jitter, np.clip(yp[idx], lo, hi), s=2, alpha=0.3,
+                   color=METHOD_COLORS.get(method), linewidths=0)
+        ax.plot([lo, hi], [lo, hi], color=INK, linewidth=0.8)
+        ax.set_title(method, fontsize=10)
+        ax.set_xlim(lo, hi)
+        ax.set_ylim(lo, hi)
+        ax.set_aspect("equal")
+        ax.set_xlabel("Gerçek SNR (dB)")
+    axes[0].set_ylabel("Tahmin SNR (dB)")
+    fig.tight_layout()
+    save(fig, name)
+    return fig

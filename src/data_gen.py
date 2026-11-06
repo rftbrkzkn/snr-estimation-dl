@@ -72,9 +72,22 @@ def generate_test_set(frame_len=config.FRAME_LEN, n_per_snr=config.N_TEST_PER_SN
     return np.concatenate(rs), np.concatenate(ys)
 
 
-def to_iq(r):
+def normalize_power(r):
+    """Her frame'i birim ortalama güce ölçekler (alıcıdaki AGC'nin karşılığı).
+
+    Bu adım olmadan model, toplam gücün (1 + sigma²) büyüklüğünden SNR'ı
+    "kopya çekerek" öğrenebilir. Gerçek alıcıda sinyal gücü bilinmediği için
+    modele sadece frame'in şekli verilir. M2M4 zaten ölçekten bağımsızdır.
+    """
+    p = np.mean(np.abs(r) ** 2, axis=1, keepdims=True)
+    return r / np.sqrt(p)
+
+
+def to_iq(r, normalize=True):
     """Complex frame'leri model girdisine çevirir: (n_frames, 2, frame_len) float32.
 
     Kanal 0 = I (gerçel kısım), kanal 1 = Q (sanal kısım).
     """
+    if normalize:
+        r = normalize_power(r)
     return np.stack([r.real, r.imag], axis=1).astype(np.float32)

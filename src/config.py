@@ -14,7 +14,7 @@ SNR_MAX_DB = 20.0
 SNR_TEST_STEP_DB = 2.0                # test grid: -10, -8, ..., 20
 
 # Veri seti boyutları (frame sayısı)
-N_TRAIN = 100_000
+N_TRAIN = 50_000                      # 50k x 2 x 1024 float32 ≈ 400 MB
 N_VAL = 10_000
 N_TEST_PER_SNR = 1000
 
